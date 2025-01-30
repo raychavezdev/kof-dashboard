@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Dashboard from "./components/dashboard/Dashboard";
-import Login from "./components/login/Login";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [isValidToken, setIsValidToken] = useState(null); // Para gestionar la validez del token
+  const [isValidToken, setIsValidToken] = useState(null);
 
   const saveToken = (token) => {
     localStorage.setItem("token", token);
@@ -15,10 +17,9 @@ const App = () => {
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
-    setIsValidToken(false); // Limpia el estado de validez
+    setIsValidToken(false);
   };
 
-  // Verifica el token en el backend al cargar la aplicación
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {
@@ -39,14 +40,14 @@ const App = () => {
         );
 
         if (response.ok) {
-          setIsValidToken(true); // Token válido
+          setIsValidToken(true);
         } else {
-          setIsValidToken(false); // Token inválido
-          logout(); // Limpia el token del localStorage si no es válido
+          setIsValidToken(false);
+          logout();
         }
       } catch (error) {
         console.error("Error verifying token:", error);
-        setIsValidToken(false); // Asume que el token es inválido si ocurre un error
+        setIsValidToken(false);
         logout();
       }
     };
@@ -58,11 +59,27 @@ const App = () => {
     return <div>Loading...</div>;
   }
 
-  if (!token || !isValidToken) {
-    return <Login setToken={saveToken} />;
-  }
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login setToken={saveToken} />} />
 
-  return <Dashboard logout={logout} token={token} />;
+        <Route element={<ProtectedRoute isValidToken={isValidToken} />}>
+          <Route
+            path="/dashboard"
+            element={<Dashboard logout={logout} token={token} />}
+          />
+        </Route>
+
+        <Route
+          path="*"
+          element={
+            <Navigate to={isValidToken ? "/dashboard" : "/login"} replace />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
