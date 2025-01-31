@@ -1,37 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useFetch from "../hooks/useFetch";
 
 const Login = ({ setToken }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const token = localStorage.getItem("token");
+  const { request, loading, error } = useFetch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch(
-        "https://palevioletred-buffalo-273277.hostingersite.com/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-          mode: "cors",
-          Authorization: `Bearer ${token}`,
-        }
-      );
-
-      const data = await response.json();
-      if (response.ok && data.data.token) {
-        setToken(data.data.token);
-        navigate("/dashboard");
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.log("Login error: ", error);
-      alert("Server error");
+    const data = await request("/login", "POST", { username, password });
+    console.log(data);
+    if (data && data.data.token) {
+      setToken(data.data.token);
+      navigate("/dashboard");
+    } else {
+      alert(error || "Error en el login");
     }
   };
 
@@ -49,7 +35,10 @@ const Login = ({ setToken }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button type="submit">Login</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Cargando..." : "Login"}
+      </button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
   );
 };

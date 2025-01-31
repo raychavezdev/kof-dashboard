@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import useFetch from "./hooks/useFetch";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [isValidToken, setIsValidToken] = useState(null);
+  const [isValidToken, setIsValidToken] = useState(false);
+  const { request } = useFetch();
 
   const saveToken = (token) => {
     localStorage.setItem("token", token);
@@ -21,25 +23,22 @@ const App = () => {
   };
 
   useEffect(() => {
+    console.log("isValidToken: ", isValidToken);
+    console.log("token: ", token);
     const verifyToken = async () => {
       if (!token) {
+        console.log("!token");
         setIsValidToken(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          "https://palevioletred-buffalo-273277.hostingersite.com/verify_token",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const data = await request("/verify_token", "POST", {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        });
 
-        if (response.ok) {
+        if (data.status == 200) {
           setIsValidToken(true);
         } else {
           setIsValidToken(false);
@@ -58,6 +57,8 @@ const App = () => {
   if (isValidToken === null) {
     return <div>Loading...</div>;
   }
+
+  if (!isValidToken && token) return;
 
   return (
     <BrowserRouter>
