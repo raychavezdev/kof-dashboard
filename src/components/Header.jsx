@@ -3,7 +3,7 @@ const Header = ({ logout }) => {
     <header className="bg-black text-white py-2">
       <div className="mx-8 my-4 md:mx-10 md:my:5 flex justify-between">
         <a href="/">
-          <h1>King of Flat</h1>
+          <h1 className="font-bold text-2xl">King of Flat</h1>
         </a>
 
         <button

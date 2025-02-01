@@ -8,10 +8,11 @@ const Dashboard = ({ logout }) => {
 
   const [skaters, setSkaters] = useState([]);
   const [action, setAction] = useState("add");
+  const [skaterSelected, setSkaterSelected] = useState(null);
 
   const fetchSkaters = async () => {
     const data = await request("/");
-    if (data.data) setSkaters(data.data);
+    if (data.data) setSkaters(data.data.sort((a, b) => b.points - a.points));
   };
   useEffect(() => {
     fetchSkaters();
@@ -34,10 +35,8 @@ const Dashboard = ({ logout }) => {
       )
     ) {
       const response = await request("/" + skater.id, "DELETE");
-      console.log(response);
       if (response.status == 200) {
         fetchSkaters();
-        alert(skater.name + " se elimino con exito");
       } else {
         alert("Error al eliminar a " + skater.name);
       }
@@ -45,13 +44,18 @@ const Dashboard = ({ logout }) => {
   };
   const handleModify = (skater) => {
     setAction("modify");
+    setSkaterSelected(skater);
   };
 
   return (
     <>
       <Header logout={logout} />
       <div className="mx-8 my-4 md:mx-10 md:my:5">
-        <Form action={action} />
+        <Form
+          action={action}
+          data={skaterSelected}
+          updateTable={fetchSkaters}
+        />
         <table className="text-center w-full text-sm text-white">
           <thead className="text-xs  uppercase bg-black ">
             <tr>
