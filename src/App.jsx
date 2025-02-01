@@ -23,11 +23,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log("isValidToken: ", isValidToken);
-    console.log("token: ", token);
     const verifyToken = async () => {
       if (!token) {
-        console.log("!token");
         setIsValidToken(false);
         return;
       }
