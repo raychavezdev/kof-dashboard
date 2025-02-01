@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Form from "../components/form/Form";
 import Header from "../components/Header";
+import { CSVLink } from "react-csv";
 
 const Dashboard = ({ logout }) => {
   const { request, loading, error } = useFetch("/");
-
   const [skaters, setSkaters] = useState([]);
   const [action, setAction] = useState("add");
   const [skaterSelected, setSkaterSelected] = useState(null);
@@ -59,9 +59,21 @@ const Dashboard = ({ logout }) => {
         <table className="text-center w-full text-sm text-white">
           <thead className="text-xs  uppercase bg-black ">
             <tr>
-              <th className="px-4 py-3">Patinador</th>
-              <th className="px-4 py-3">Puntos</th>
-              <th className="px-4 py-3"></th>
+              <th className="px-4 py-5">Patinador</th>
+              <th className="px-4 py-5">Puntos</th>
+              <th className="px-4 py-5">
+                <CSVLink
+                  headers={[
+                    { label: "Patinador", key: "name" },
+                    { label: "Puntos", key: "points" },
+                  ]}
+                  data={skaters.map(({ name, points }) => ({ name, points }))}
+                  filename="kof-tabla-de-patinadores.csv"
+                  className="bg-green-700 p-1 rounded-md hover:bg-green-900 inline-flex  "
+                >
+                  Exportar a Excel
+                </CSVLink>
+              </th>
             </tr>
           </thead>
           <tbody>
