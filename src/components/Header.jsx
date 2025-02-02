@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Header = ({ logout }) => {
   return (
     <header className="bg-black text-white py-2">
@@ -5,6 +7,12 @@ const Header = ({ logout }) => {
         <a href="/">
           <h1 className="font-bold text-2xl">King of Flat</h1>
         </a>
+
+        <ul>
+          <li>
+            <Link to={"/matches"}>Enfrentamientos</Link>
+          </li>
+        </ul>
 
         <button
           onClick={logout}

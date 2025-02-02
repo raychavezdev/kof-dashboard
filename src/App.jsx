@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useFetch from "./hooks/useFetch";
+import Matches from "./pages/Matches";
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -66,6 +67,10 @@ const App = () => {
           <Route
             path="/dashboard"
             element={<Dashboard logout={logout} token={token} />}
+          />
+          <Route
+            path="/matches"
+            element={<Matches logout={logout} token={token} />}
           />
         </Route>
 
